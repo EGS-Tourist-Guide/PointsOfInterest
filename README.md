@@ -12,17 +12,24 @@ The idea is to use GraphQL instead of REST since i am doing a single query with 
 ## GraphQL Schema (SDL)
 
 The query must have into consideration different inputs in order to retrieve the correct POI's and their respective information.
-Searching parameters are all optional and can be:
-  - location -> city, region, country
-  - type/keyword -> beach, nature, history, food
+Searching parameters are mostly optional and can be:
+  - location name -> city, region, country
+  - type/keyword -> beach, nature, history, food, shopping
   - category -> festivals, museums, restaurants
-  - start and end dates -> YYYY-MM-DD
   - price range -> €€ - €€€ 
 
-If there are no input arguments, most searched POI's will be displayed.
+One can also search POI's by their exact location in the moment (using GPS to obtain latitude and longitude), choosing as input the length of the radius.
+  - latitude -> -90 to 90 (Decimal Degrees)
+  - longitude -> -180 to 180 (Decimal Degrees)
+  - radius -> 100 to 5000 meters
+
+If there are no input arguments, default POI's will be displayed.
+
 The output will be a list of POI's with the following information (name, location and description are mandatory):
   - name
-  - location
+  - latitude
+  - longitude
+  - location name
   - description
   - start and end dates
   - capacity
@@ -35,26 +42,27 @@ The first schema structure looks like this:
 type PointOfInterest { 
     id: ID!
     name: String!
-    location: String!
+    latitude: Float
+    longitude: Float
+    locationName: String!
     description: String!
-    startDate: String
-    endDate: String
     capacity: Int
     priceRange: String
     thumbnail: String
   }
 
-  input PointOfInterestInput {
-    location: String
+  input PoiSearchInput {
+    latitude: Float
+    longitude: Float
+    radius: Float
+    locationName: String
     keyword: String
     category: String
-    startDate: String
-    endDate: String
     priceRange: String
   }
 
   type Query {
-    searchPointsOfInterest(searchInput: PointOfInterestInput): [PointOfInterest!]!
+    searchPointsOfInterest(searchInput: PoiSearchInput): [PointOfInterest!]!
   }
   ```
 
@@ -64,15 +72,16 @@ Example of query:
 query {
   searchPointsOfInterest(
     searchInput: {
-      location: "Algarve"
+      locationName: "Algarve"
       keyword: "beach"
     }
   ) {
+    id
     name
-    location
+    latitude
+    longitude
+    locationName
     description
-    startDate
-    endDate
     capacity
     priceRange
     thumbnail
@@ -80,27 +89,30 @@ query {
 }
 ```
 
-This query will return a JSON response with a list of beaches located in Algarve. Information like startDate and endDate is optional, i.e. can be null, and will only be displayed if they are available (In this case, beaches don't have start and end dates).
+This query will return a JSON response with a list of beaches located in Algarve. Information like price range and capacity are optional, i.e. can be null, and will not be presented in this case (most beaches don't have neither price range or capacity).
 For a better understanding of the query, the following image shows the structure of the expected response:
 ```json
 {
   "data": {
     "searchPointsOfInterest": [
       {
+        "id": "1",
         "name": "Praia da Marinha",
-        "location": "Algarve, Portugal",
+        "latitude": 37.08749965,
+        "longitude": -8.406331708,
+        "locationName": "Algarve, Portugal",
         "description": "Praia da Marinha is one of the most emblematic and beautiful beaches in the Algarve region. It features stunning cliffs, crystal-clear waters, and golden sand.",
-        "startDate": null,
-        "endDate": null,
         "capacity": null,
+        "priceRange": null,
         "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg"
       },
       {
+        "id": "2",
         "name": "Praia da Falésia",
-        "location": "Algarve, Portugal",
+        "latitude": 37.08611, 
+        "longitude": -8.168000,
+        "locationName": "Algarve, Portugal",
         "description": "Praia da Falésia is a breathtaking beach known for its towering cliffs and golden sands. It offers stunning views and is perfect for sunbathing and swimming.",
-        "startDate": null,
-        "endDate": null,
         "capacity": null,
         "priceRange": null,
         "thumbnail": "https://example.com/praia-da-falesia-thumbnail.jpg"
@@ -110,22 +122,23 @@ For a better understanding of the query, the following image shows the structure
 }
 ```
 
-Another example of query:
+Another example of query, using the nearby location search, for example, Aveiro center:
 
 ```graphql
 query {
   searchPointsOfInterest(
     searchInput: {
-      location: "Aveiro"
-      category: "Restaurante"
-      priceRange: "10€ - 20€"
+      latitude: 40.641249
+      longitude: -8.653770
+      radius: 1000
     }
   ) {
+    id
     name
-    location
+    latitude
+    longitude
+    locationName
     description
-    startDate
-    endDate
     capacity
     priceRange
     thumbnail
@@ -133,5 +146,5 @@ query {
 }
 ```
 
-With this query we can obtain name, location, description, opening and closing day, capacity, price range and photo of a list of restaurants located in Aveiro for a price range between 10 and 20 euros.
+With this query we can obtain id, name, precise geographic coordinates, location name, description, capacity, price range and photo of a list of POIs located within a 1km radius of the user's current position.
 
