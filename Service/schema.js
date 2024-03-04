@@ -7,12 +7,13 @@ export const typeDefs = `#graphql
     startDate: String
     endDate: String
     capacity: Int
+    priceRange: String
     thumbnail: String
   }
 
   input PointOfInterestInput {
     location: String
-    type: String
+    keyword: String
     category: String
     startDate: String
     endDate: String
