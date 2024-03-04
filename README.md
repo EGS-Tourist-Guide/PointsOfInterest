@@ -25,13 +25,13 @@ One can also search POI's by their exact location in the moment (using GPS to ob
 
 If there are no input arguments, default POI's will be displayed.
 
-The output will be a list of POI's with the following information (name, location and description are mandatory):
+The output will be a list of POI's with the following information (id, name, location and description are mandatory):
+  - id
   - name
   - latitude
   - longitude
   - location name
   - description
-  - start and end dates
   - capacity
   - price range
   - thumbnail
