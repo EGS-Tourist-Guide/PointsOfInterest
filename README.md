@@ -122,14 +122,14 @@ For a better understanding of the query, the following image shows the structure
 }
 ```
 
-Another example of query, using the nearby location search, for example, Aveiro center:
+Another example of query, using the nearby location search:
 
 ```graphql
 query {
   searchPointsOfInterest(
     searchInput: {
-      latitude: 40.641249
-      longitude: -8.653770
+      latitude: 40.2084
+      longitude: -8.4236
       radius: 1000
     }
   ) {
@@ -147,4 +147,35 @@ query {
 ```
 
 With this query we can obtain id, name, precise geographic coordinates, location name, description, capacity, price range and photo of a list of POIs located within a 1km radius of the user's current position.
+Since in this case the user is located near the center of Coimbra, the result are the 2 POIs as shown below:
 
+```json
+{
+  "data": {
+    "searchPointsOfInterest": [
+      {
+        "id": "3",
+        "name": "Jardim Botânico de Coimbra",
+        "latitude": 40.205148,
+        "longitude": -8.420713,
+        "locationName": "Coimbra, Portugal",
+        "description": "The Coimbra Botanical Garden is a beautiful botanical garden located in the heart of Coimbra. It features a diverse collection of plants and trees from around the world.",
+        "capacity": null,
+        "priceRange": null,
+        "thumbnail": "https://example.com/botanical-garden-thumbnail.jpg"
+      },
+      {
+        "id": "4",
+        "name": "Rio Mondego",
+        "latitude": 40.205520,
+        "longitude": -8.429349,
+        "locationName": "Coimbra, Portugal",
+        "description": "The Mondego River is the longest river entirely within Portuguese territory. It flows through Coimbra, offering picturesque views and recreational activities.",
+        "capacity": null,
+        "priceRange": null,
+        "thumbnail": "https://example.com/mondego-river-thumbnail.jpg"
+      }
+    ]
+  }
+}
+```
