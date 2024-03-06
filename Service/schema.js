@@ -6,6 +6,9 @@ export const typeDefs = `#graphql
     longitude: Float
     locationName: String!
     description: String!
+    category: String!
+    openingHours: String
+    schedule: String
     capacity: Int
     priceRange: String
     thumbnail: String
@@ -16,14 +19,34 @@ export const typeDefs = `#graphql
     longitude: Float
     radius: Float
     locationName: String
-    keyword: String
     category: String
+    openingHours: String
+    schedule: String
     priceRange: String
   }
 
   type Query {
     searchPointsOfInterest(searchInput: PoiSearchInput): [PointOfInterest!]!
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   input CreatePointOfInterestInput {
     latitude: Float!

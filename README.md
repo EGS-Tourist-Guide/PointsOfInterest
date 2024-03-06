@@ -3,7 +3,7 @@
 The idea is to use GraphQL instead of REST since i am doing a single query with multiple data to chose the correct POIs. 
 
 ## Technologies used
-- **Apollo Server**: Simplifies the process of building GraphQL APIs. It is also well documented and seems easy to use.
+- **Node JS and Apollo Server**: Simplifies the process of building GraphQL APIs. It is also well documented and seems easy to use.
 
 - **PostgreSQL with PostGIS extension**: Widely used database. Can be seamlessly integrated with Apollo Server, allowing me to efficiently fetch and manipulate data for our GraphQL API. PostGIS will be used to add support for geographic objects.
 
@@ -14,8 +14,9 @@ The idea is to use GraphQL instead of REST since i am doing a single query with 
 The query must have into consideration different inputs in order to retrieve the correct POI's and their respective information.
 Searching parameters are mostly optional and can be:
   - location name -> city, region, country
-  - type/keyword -> beach, nature, history, food, shopping
-  - category -> festivals, museums, restaurants
+  - category -> beach, nature, history, food, shopping, restaurant, museum
+  - openingHours -> 12-16,19-22 (pm) 
+  - schedule -> monday-friday
   - price range -> €€ - €€€ 
 
 One can also search POI's by their exact location in the moment (using GPS to obtain latitude and longitude), choosing as input the length of the radius.
@@ -25,13 +26,15 @@ One can also search POI's by their exact location in the moment (using GPS to ob
 
 If there are no input arguments, default POI's will be displayed.
 
-The output will be a list of POI's with the following information (id, name, location and description are mandatory):
+The output will be a list of POI's with the following information (id, name, location, description and category are mandatory):
   - id
   - name
   - latitude
   - longitude
   - location name
   - description
+  - openingHours
+  - schedule
   - capacity
   - price range
   - thumbnail
@@ -46,6 +49,8 @@ type PointOfInterest {
     longitude: Float
     locationName: String!
     description: String!
+    openingHours: String
+    schedule: String
     capacity: Int
     priceRange: String
     thumbnail: String
@@ -56,8 +61,9 @@ type PointOfInterest {
     longitude: Float
     radius: Float
     locationName: String
-    keyword: String
     category: String
+    openingHours: String
+    schedule: String
     priceRange: String
   }
 
@@ -73,7 +79,7 @@ query {
   searchPointsOfInterest(
     searchInput: {
       locationName: "Algarve"
-      keyword: "beach"
+      category: "beach"
     }
   ) {
     id
@@ -82,6 +88,8 @@ query {
     longitude
     locationName
     description
+    openingHours
+    schedule
     capacity
     priceRange
     thumbnail
@@ -102,6 +110,9 @@ For a better understanding of the query, the following image shows the structure
         "longitude": -8.406331708,
         "locationName": "Algarve, Portugal",
         "description": "Praia da Marinha is one of the most emblematic and beautiful beaches in the Algarve region. It features stunning cliffs, crystal-clear waters, and golden sand.",
+        "category": "Beach",
+        "openingHours": null,
+        "schedule": null,
         "capacity": null,
         "priceRange": null,
         "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg"
@@ -113,6 +124,9 @@ For a better understanding of the query, the following image shows the structure
         "longitude": -8.168000,
         "locationName": "Algarve, Portugal",
         "description": "Praia da Falésia is a breathtaking beach known for its towering cliffs and golden sands. It offers stunning views and is perfect for sunbathing and swimming.",
+        "category": "Beach",
+        "openingHours": null,
+        "schedule": null,
         "capacity": null,
         "priceRange": null,
         "thumbnail": "https://example.com/praia-da-falesia-thumbnail.jpg"
@@ -160,6 +174,9 @@ Since in this case the user is located near the center of Coimbra, the result ar
         "longitude": -8.420713,
         "locationName": "Coimbra, Portugal",
         "description": "The Coimbra Botanical Garden is a beautiful botanical garden located in the heart of Coimbra. It features a diverse collection of plants and trees from around the world.",
+        "category": "Nature",
+        "openingHours": null,
+        "schedule": null,
         "capacity": null,
         "priceRange": null,
         "thumbnail": "https://example.com/botanical-garden-thumbnail.jpg"
@@ -171,6 +188,9 @@ Since in this case the user is located near the center of Coimbra, the result ar
         "longitude": -8.429349,
         "locationName": "Coimbra, Portugal",
         "description": "The Mondego River is the longest river entirely within Portuguese territory. It flows through Coimbra, offering picturesque views and recreational activities.",
+        "category": "Nature",
+        "openingHours": null,
+        "schedule": null,
         "capacity": null,
         "priceRange": null,
         "thumbnail": "https://example.com/mondego-river-thumbnail.jpg"
