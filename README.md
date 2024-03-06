@@ -88,6 +88,7 @@ query {
     longitude
     locationName
     description
+    category
     openingHours
     schedule
     capacity
@@ -153,6 +154,9 @@ query {
     longitude
     locationName
     description
+    category
+    openingHours
+    schedule
     capacity
     priceRange
     thumbnail
