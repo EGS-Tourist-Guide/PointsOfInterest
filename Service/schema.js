@@ -1,9 +1,8 @@
 export const typeDefs = `#graphql
   type PointOfInterest { 
-    id: ID!
+    _id: ID!
     name: String!
-    latitude: Float
-    longitude: Float
+    location: Point!
     locationName: String!
     description: String!
     category: String!
@@ -15,8 +14,7 @@ export const typeDefs = `#graphql
   }
 
   input PoiSearchInput {
-    latitude: Float
-    longitude: Float
+    location: PointInput
     radius: Float
     locationName: String
     category: String
@@ -29,7 +27,15 @@ export const typeDefs = `#graphql
     searchPointsOfInterest(searchInput: PoiSearchInput): [PointOfInterest!]!
   }
 
+  type Point {
+    type: String!
+    coordinates: [Float]!
+  }
 
+  input PointInput {
+    type: String!
+    coordinates: [Float]!
+  }
 
 
 

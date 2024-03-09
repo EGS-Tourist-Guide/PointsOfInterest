@@ -1,12 +1,15 @@
-import { ApolloServer, gql } from '@apollo/server'
+import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
+import { MongoClient } from 'mongodb'
 
 import { typeDefs } from './schema.js'
+import resolvers from './resolvers.js'  
+
 
 // server setup
 const server = new ApolloServer({
     typeDefs,
-    // resolvers
+    resolvers
 })
 
 const { url } = await startStandaloneServer(server, {
