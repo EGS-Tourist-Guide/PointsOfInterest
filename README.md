@@ -26,7 +26,7 @@ One can also search POI's by their exact location in the moment (using GPS to ob
 
 If there are no input arguments, default POI's will be displayed.
 
-The output will be a list of POI's with the following information (id, name, location, description and category are mandatory):
+The output will be a list of POI's with the following information (id, name, location, description, category are mandatory):
   - id
   - name
   - latitude
