@@ -1,6 +1,5 @@
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
-import { MongoClient } from 'mongodb'
 
 import { typeDefs } from './schema.js'
 import resolvers from './resolvers.js'  

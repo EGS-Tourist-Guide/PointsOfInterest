@@ -9,7 +9,7 @@ export const typeDefs = `#graphql
     openingHours: String
     schedule: String
     capacity: Int
-    priceRange: String
+    priceRange: [Int]
     thumbnail: String
   }
 
@@ -18,9 +18,7 @@ export const typeDefs = `#graphql
     radius: Float
     locationName: String
     category: String
-    openingHours: String
-    schedule: String
-    priceRange: String
+    priceRange: [Int]
   }
 
   type Query {
@@ -36,23 +34,6 @@ export const typeDefs = `#graphql
     type: String!
     coordinates: [Float]!
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   input CreatePointOfInterestInput {
     latitude: Float!

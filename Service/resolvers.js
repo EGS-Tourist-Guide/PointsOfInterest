@@ -21,6 +21,25 @@ const searchPointsOfInterest = async (_, { searchInput }) => {
             filter['locationName'] = searchInput.locationName;
         }
 
+        if (searchInput.category) {
+            filter['category'] = searchInput.category;
+        }
+
+        if (searchInput.priceRange) {
+            // Ensure priceRange is an array
+            if (!Array.isArray(searchInput.priceRange)) {
+                throw new Error('Price range must be an array');
+            }
+
+            // Extract min and max values from the array
+            const [minPrice, maxPrice] = searchInput.priceRange;
+
+            filter['priceRange'] = {
+                $gte: minPrice, // greater than or equal to
+                $lte: maxPrice  // less than or equal to
+            };
+        }
+        
         // Add conditions based on the search input
         if (searchInput.location) {
             filter['location'] = {
@@ -34,8 +53,6 @@ const searchPointsOfInterest = async (_, { searchInput }) => {
             };
         }
 
-        // Add other conditions based on other search input fields
-
         // Execute the query
         const result = await collection.find(filter).toArray();
         return result;
@@ -47,7 +64,6 @@ const searchPointsOfInterest = async (_, { searchInput }) => {
     }
 };
 
-// Define your resolvers
 const resolvers = {
     Query: {
         searchPointsOfInterest,
