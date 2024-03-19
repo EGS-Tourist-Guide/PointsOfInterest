@@ -1,9 +1,14 @@
 import { MongoClient } from 'mongodb';
+import { AuthenticationError } from 'apollo-server-express';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Define MongoDB connection URI and database/collection names
-const uri = 'mongodb://localhost:27017/poi_database'; 
-const dbName = 'poi_database'; 
-const collectionName = 'POIs';
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'; 
+const dbName = process.env.DB_NAME || 'poi_database'; 
+const collectionName = process.env.COLLECTION_NAME || 'POIs';
+
 
 // Function to connect to MongoDB and execute the query
 const searchPointsOfInterest = async (_, { searchInput }) => {
@@ -18,7 +23,10 @@ const searchPointsOfInterest = async (_, { searchInput }) => {
         const filter = {};
 
         if (searchInput.locationName) {
-            filter['locationName'] = searchInput.locationName;
+            // Case-insensitive regex to match the location name
+            filter['locationName'] = {
+                $regex: new RegExp(searchInput.locationName, 'i')
+            };
         }
 
         if (searchInput.category) {
