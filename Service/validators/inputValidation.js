@@ -1,17 +1,7 @@
 const validateSearchInput = (searchInput) => {
-    // Check if the locationName is a string
-    if (searchInput.locationName && typeof searchInput.locationName !== 'string') {
-        throw new Error('Query parameter <locationName> must be a string');
-    }
-
-    // Check if the category is a string
+    // This is not necessary because schema already defines category as a string (What i can do is to check if the category is in a list of valid categories)
     if (searchInput.category && typeof searchInput.category !== 'string') {
         throw new Error('Query parameter <category> must be a string');
-    }
-
-    // Check if the priceRange is an array
-    if (searchInput.priceRange && !Array.isArray(searchInput.priceRange)) {
-        throw new Error('Query parameter <priceRange> must be an array');
     }
 
     // Check if the radius is a number between 100 and 10000
@@ -19,25 +9,19 @@ const validateSearchInput = (searchInput) => {
         throw new Error('Query parameter <radius> must be a number between 100 and 10000, representing the search radius in meters');
     }
 
-    // Check if the location is a valid Point
+    // Check if the location is a valid Point (type: "Point", coordinates: [longitude from -180 to 180, latitude from -90 to 90])
     if (searchInput.location && !validatePoint(searchInput.location)) {
-        throw new Error('Query parameter <location> must be a valid Point');
+        throw new Error('Query parameter <location> must be of type Point, with longitude from -180 to 180 and latitude from -90 to 90');
     }
 };
 
 const validatePoint = (point) => {
-    // Check if the point is an object
-    if (typeof point !== 'object') {
-        return false;
-    }
-
     // Check if the type is a string
-    if (typeof point.type !== 'string') {
+    if (typeof point.type !== 'Point') {
         return false;
     }
 
-    // Check if the coordinates is an array of numbers
-    if (!Array.isArray(point.coordinates) || point.coordinates.some(coord => typeof coord !== 'number')) {
+    if (point.coordinates[0] < -180 || point.coordinates[0] > 180 || point.coordinates[1] < -90 || point.coordinates[1] > 90){
         return false;
     }
 

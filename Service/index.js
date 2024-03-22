@@ -18,7 +18,7 @@ const authenticateWithApiKey = (req, res, next) => {
     next(); // Continue with the request
 };
 
-app.use(authenticateWithApiKey); // Apply the middleware to all requests
+//app.use(authenticateWithApiKey); // Apply the middleware to all requests
 
 // server setup
 const server = new ApolloServer({

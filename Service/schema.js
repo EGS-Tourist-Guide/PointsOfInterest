@@ -4,13 +4,12 @@ export const typeDefs = `#graphql
     name: String!
     location: Point!
     locationName: String!
-    description: String!
-    category: String!
-    openingHours: String
-    schedule: String
-    capacity: Int
-    priceRange: [Int]
+    street: String
+    postcode: String
+    description: String
+    category: String
     thumbnail: String
+    event_ids: [ID]
   }
 
   input PoiSearchInput {
@@ -18,7 +17,6 @@ export const typeDefs = `#graphql
     radius: Float
     locationName: String
     category: String
-    priceRange: [Int]
   }
 
   type Query {
@@ -36,30 +34,37 @@ export const typeDefs = `#graphql
   }
 
   input CreatePointOfInterestInput {
-    latitude: Float!
-    longitude: Float!
+    _id: ID!
     name: String!
+    location: PointInput!
     locationName: String!
-    description: String!
-    capacity: Int
-    priceRange: String
+    street: String
+    postcode: String
+    description: String
+    category: String
     thumbnail: String
+    event_ids: [ID]
   }
 
   input UpdatePointOfInterestInput {
-    latitude: Float
-    longitude: Float
     name: String
+    location: PointInput
     locationName: String
+    street: String
+    postcode: String
     description: String
-    capacity: Int
-    priceRange: String
+    category: String
     thumbnail: String
+    event_ids: [ID]
+  }
+
+  type idOfCreatedPoi {
+    _id: ID!
   }
 
   type Mutation {
     createPointOfInterest(input: CreatePointOfInterestInput!): PointOfInterest!
     updatePointOfInterest(id: ID!, input: UpdatePointOfInterestInput!): PointOfInterest!
-    deletePointOfInterest(id: ID!): Boolean!
+    deletePointOfInterest(id: ID!): String!
   }
 `

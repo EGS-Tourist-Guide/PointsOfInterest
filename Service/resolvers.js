@@ -1,6 +1,6 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { AuthenticationError } from 'apollo-server-express';
-
+import { validateSearchInput } from './validators/inputValidation.js';  
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -13,6 +13,9 @@ const collectionName = process.env.COLLECTION_NAME || 'POIs';
 // Function to connect to MongoDB and execute the query
 const searchPointsOfInterest = async (_, { searchInput }) => {
     const client = new MongoClient(uri);
+
+    // Validate the search input
+    validateSearchInput(searchInput);
 
     try {
         await client.connect();
@@ -31,21 +34,6 @@ const searchPointsOfInterest = async (_, { searchInput }) => {
 
         if (searchInput.category) {
             filter['category'] = searchInput.category;
-        }
-
-        if (searchInput.priceRange) {
-            // Ensure priceRange is an array
-            if (!Array.isArray(searchInput.priceRange)) {
-                throw new Error('Price range must be an array');
-            }
-
-            // Extract min and max values from the array
-            const [minPrice, maxPrice] = searchInput.priceRange;
-
-            filter['priceRange'] = {
-                $gte: minPrice, // greater than or equal to
-                $lte: maxPrice  // less than or equal to
-            };
         }
         
         // Add conditions based on the search input
@@ -75,6 +63,75 @@ const searchPointsOfInterest = async (_, { searchInput }) => {
 const resolvers = {
     Query: {
         searchPointsOfInterest,
+    },
+    Mutation: {
+        createPointOfInterest: async (_, { input }) => {
+            const client = new MongoClient(uri);
+            try {
+                await client.connect();
+                const database = client.db(dbName);
+                const collection = database.collection(collectionName);
+
+                const result = await collection.insertOne(input);
+
+                const insertedId = result.insertedId;
+
+                // Fetch the created point of interest using the inserted ID
+                const createdPointOfInterest = await collection.findOne({ _id: insertedId });
+
+                return createdPointOfInterest;
+            } catch (error) {
+                console.error('Error creating point of interest:', error);
+                throw new Error('Internal server error');
+            } finally {
+                await client.close();
+            }
+        },
+        updatePointOfInterest: async (_, { id, input }) => {
+            const client = new MongoClient(uri);
+            try {
+                await client.connect();
+                const database = client.db(dbName);
+                const collection = database.collection(collectionName);
+
+                const result = await collection.findOneAndUpdate(
+                    { _id: id },
+                    { $set: input },
+                    { returnOriginal: false }
+                );
+
+                return result;
+            } catch (error) {
+                console.error('Error updating point of interest:', error);
+                throw new Error('Internal server error');
+            } finally {
+                await client.close();
+            }
+        },
+        deletePointOfInterest: async (_, { id }) => {
+            const client = new MongoClient(uri);
+            try {
+                await client.connect();
+                const database = client.db(dbName);
+                const collection = database.collection(collectionName);
+
+                const result = await collection.deleteOne({ _id: id });
+                if (result.deletedCount === 1) {
+                    return 'Point of interest deleted successfully';
+                } else {
+                    throw new Error('Point of interest not found');
+                }
+            } catch (error) {
+                if (error.message === 'Point of interest not found') {
+                    throw error;
+                } else {
+                    console.error('Error deleting point of interest:', error);
+                    throw new Error('Internal server error');
+                }
+            } finally {
+                await client.close();
+            }
+        },
     },
 };
 
