@@ -19,10 +19,6 @@ export const typeDefs = `#graphql
     category: String
   }
 
-  type Query {
-    searchPointsOfInterest(searchInput: PoiSearchInput, apiKey: String!): [PointOfInterest!]!
-  }
-
   type Point {
     type: String!
     coordinates: [Float]!
@@ -33,8 +29,13 @@ export const typeDefs = `#graphql
     coordinates: [Float]!
   }
 
+  type Query {
+    searchPointsOfInterest(searchInput: PoiSearchInput, apiKey: String!): [PointOfInterest!]!
+    
+    recoverApiKey(clientName: String!): String!
+  }
+
   input CreatePointOfInterestInput {
-    _id: ID!
     name: String!
     location: PointInput!
     locationName: String!
@@ -56,10 +57,6 @@ export const typeDefs = `#graphql
     category: String
     thumbnail: String
     event_ids: [ID]
-  }
-
-  type idOfCreatedPoi {
-    _id: ID!
   }
 
   type Mutation {

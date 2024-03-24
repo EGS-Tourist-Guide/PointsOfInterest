@@ -5,12 +5,6 @@ import { authenticateWithApiKey, generateApiKey } from './authUtils.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Define MongoDB connection URI and database/collection names
-// const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'; 
-// const dbName = process.env.DB_NAME || 'poi_database'; 
-// const mainCollection = process.env.COLLECTION_NAME || 'POIs';
-
-
 // Function to connect to MongoDB and execute the query
 const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
     await authenticateWithApiKey(_, _, _, { apiKey: apiKey });
@@ -32,7 +26,10 @@ const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
         }
 
         if (searchInput.category) {
-            filter['category'] = searchInput.category;
+            // Case-insensitive to capital letters
+            filter['category'] = {
+                $regex: new RegExp(searchInput.category, 'i')
+            };
         }
         
         // Add conditions based on the search input
@@ -50,10 +47,19 @@ const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
 
         // Execute the query
         const result = await collection.find(filter).toArray();
+
+        if (result.length === 0) {
+            throw new Error('No points of interest found');
+        }
+
         return result;
     } catch (error) {
-        console.error('Error executing MongoDB query:', error);
-        throw new Error('Internal server error');
+        if (error.message === 'No points of interest found') {
+            throw error;
+        } else {
+            console.error('Error executing MongoDB query:', error);
+            throw new Error('Internal server error');
+        }
     } finally {
         closeConnection();
     }
@@ -62,6 +68,33 @@ const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
 const resolvers = {
     Query: {
         searchPointsOfInterest,
+        recoverApiKey: async (_, { clientName }) => {
+            // check if client has an API key
+            // if so, recover the API key
+
+            let apiKey = null;
+            try {
+                const collection = await connectToApiKeys();
+
+                const result = await collection.findOne({ clientName: clientName });
+                if (result) {
+                    apiKey = result.apiKey;
+                } else {
+                    throw new Error('Client does not have an API key');
+                }
+
+                return apiKey;
+            } catch (error) {
+                if (error.message === 'Client does not have an API key') {
+                    throw error;
+                } else {
+                    console.error('Error recovering API key:', error);
+                    throw new Error('Internal server error');
+                }
+            } finally {
+                closeConnection();
+            }
+        }
     },
     Mutation: {
         createPointOfInterest: async (_, { input, apiKey }) => {
@@ -79,7 +112,6 @@ const resolvers = {
 
                 return createdPointOfInterest;
             } catch (error) {
-                console.error('Error creating point of interest:', error);
                 throw new Error('Internal server error');
             } finally {
                 closeConnection();
@@ -153,7 +185,7 @@ const resolvers = {
             } finally {
                 closeConnection();
             }
-        },
+        }
     },
 };
 

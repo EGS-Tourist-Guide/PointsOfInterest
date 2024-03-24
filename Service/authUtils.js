@@ -13,10 +13,6 @@ const authenticateWithApiKey = async (resolve, parent, args, context, info) => {
   if (!validApiKey) {
     throw new AuthenticationError('Invalid API key');
   }
-
-  // Proceed to resolver if API key is valid
-  // const result = await resolve(parent, args, context, info);
-  // return result;
 };
 
 // Function to validate API key

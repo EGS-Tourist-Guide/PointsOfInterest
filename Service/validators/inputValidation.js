@@ -1,12 +1,16 @@
+const validCategories = ['Nature', 'nature', 'Food', 'food', 'Culture', 'culture', 'Shopping', 'shopping', 'Landmarks', 'landmarks'];
+
 const validateSearchInput = (searchInput) => {
-    // This is not necessary because schema already defines category as a string (What i can do is to check if the category is in a list of valid categories)
-    if (searchInput.category && typeof searchInput.category !== 'string') {
-        throw new Error('Query parameter <category> must be a string');
+    const validCategoriesUpperCase = validCategories.filter(category => category[0] === category[0].toUpperCase());
+
+    if (searchInput.category && !validCategories.includes(searchInput.category)) {
+        // Only show the valid categories with capital letters
+        throw new Error(`Invalid category '${searchInput.category}'. Valid categories are: ${validCategoriesUpperCase.join(', ')}`);
     }
 
     // Check if the radius is a number between 100 and 10000
-    if (searchInput.radius && (typeof searchInput.radius !== 'number' || searchInput.radius < 100 || searchInput.radius > 50000)) {
-        throw new Error('Query parameter <radius> must be a number between 100 and 10000, representing the search radius in meters');
+    if (searchInput.radius && (searchInput.radius < 100 || searchInput.radius > 50000)) {
+        throw new Error('Query parameter <radius> must be a number between 100 and 50000, representing the search radius in meters');
     }
 
     // Check if the location is a valid Point (type: "Point", coordinates: [longitude from -180 to 180, latitude from -90 to 90])
