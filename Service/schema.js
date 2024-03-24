@@ -20,7 +20,7 @@ export const typeDefs = `#graphql
   }
 
   type Query {
-    searchPointsOfInterest(searchInput: PoiSearchInput): [PointOfInterest!]!
+    searchPointsOfInterest(searchInput: PoiSearchInput, apiKey: String!): [PointOfInterest!]!
   }
 
   type Point {
@@ -63,8 +63,10 @@ export const typeDefs = `#graphql
   }
 
   type Mutation {
-    createPointOfInterest(input: CreatePointOfInterestInput!): PointOfInterest!
-    updatePointOfInterest(id: ID!, input: UpdatePointOfInterestInput!): PointOfInterest!
-    deletePointOfInterest(id: ID!): String!
+    createPointOfInterest(input: CreatePointOfInterestInput!, apiKey: String!): PointOfInterest!
+    updatePointOfInterest(id: ID!, input: UpdatePointOfInterestInput!, apiKey: String!): PointOfInterest!
+    deletePointOfInterest(id: ID!, apiKey: String!): String!
+
+    generateApiKey(clientName: String!): String!
   }
 `

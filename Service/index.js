@@ -6,24 +6,10 @@ import resolvers from './resolvers.js'
 
 const app = express();
 
-// Define middleware to authenticate requests
-const authenticateWithApiKey = (req, res, next) => {
-    const clientApiKey = req.headers['x-api-key']; // Extract API key from header
-
-    // Compare with the stored API key
-    if (clientApiKey !== process.env.API_KEY) {
-        throw new AuthenticationError('Invalid API key');
-    }
-
-    next(); // Continue with the request
-};
-
-//app.use(authenticateWithApiKey); // Apply the middleware to all requests
-
 // server setup
 const server = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
 })
 
 async function startApolloServer() {

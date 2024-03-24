@@ -5,7 +5,7 @@ const validateSearchInput = (searchInput) => {
     }
 
     // Check if the radius is a number between 100 and 10000
-    if (searchInput.radius && (typeof searchInput.radius !== 'number' || searchInput.radius < 100 || searchInput.radius > 10000)) {
+    if (searchInput.radius && (typeof searchInput.radius !== 'number' || searchInput.radius < 100 || searchInput.radius > 50000)) {
         throw new Error('Query parameter <radius> must be a number between 100 and 10000, representing the search radius in meters');
     }
 
@@ -16,10 +16,6 @@ const validateSearchInput = (searchInput) => {
 };
 
 const validatePoint = (point) => {
-    // Check if the type is a string
-    if (typeof point.type !== 'Point') {
-        return false;
-    }
 
     if (point.coordinates[0] < -180 || point.coordinates[0] > 180 || point.coordinates[1] < -90 || point.coordinates[1] > 90){
         return false;

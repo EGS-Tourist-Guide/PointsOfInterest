@@ -1,26 +1,25 @@
 import { MongoClient, ObjectId } from 'mongodb';
-import { AuthenticationError } from 'apollo-server-express';
-import { validateSearchInput } from './validators/inputValidation.js';  
+import { connect, connectToApiKeys, closeConnection } from './database/db.js';
+import { validateSearchInput } from './validators/inputValidation.js';
+import { authenticateWithApiKey, generateApiKey } from './authUtils.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
 // Define MongoDB connection URI and database/collection names
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'; 
-const dbName = process.env.DB_NAME || 'poi_database'; 
-const collectionName = process.env.COLLECTION_NAME || 'POIs';
+// const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'; 
+// const dbName = process.env.DB_NAME || 'poi_database'; 
+// const mainCollection = process.env.COLLECTION_NAME || 'POIs';
 
 
 // Function to connect to MongoDB and execute the query
-const searchPointsOfInterest = async (_, { searchInput }) => {
-    const client = new MongoClient(uri);
-
+const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
+    await authenticateWithApiKey(_, _, _, { apiKey: apiKey });
+    
     // Validate the search input
     validateSearchInput(searchInput);
 
     try {
-        await client.connect();
-        const database = client.db(dbName);
-        const collection = database.collection(collectionName);
+        const collection = await connect();
 
         // Construct the filter based on the search input
         const filter = {};
@@ -56,7 +55,7 @@ const searchPointsOfInterest = async (_, { searchInput }) => {
         console.error('Error executing MongoDB query:', error);
         throw new Error('Internal server error');
     } finally {
-        await client.close();
+        closeConnection();
     }
 };
 
@@ -65,12 +64,11 @@ const resolvers = {
         searchPointsOfInterest,
     },
     Mutation: {
-        createPointOfInterest: async (_, { input }) => {
-            const client = new MongoClient(uri);
+        createPointOfInterest: async (_, { input, apiKey }) => {
+            await authenticateWithApiKey(_, _, _, { apiKey: apiKey });
+
             try {
-                await client.connect();
-                const database = client.db(dbName);
-                const collection = database.collection(collectionName);
+                const collection = await connect();
 
                 const result = await collection.insertOne(input);
 
@@ -84,15 +82,13 @@ const resolvers = {
                 console.error('Error creating point of interest:', error);
                 throw new Error('Internal server error');
             } finally {
-                await client.close();
+                closeConnection();
             }
         },
-        updatePointOfInterest: async (_, { id, input }) => {
-            const client = new MongoClient(uri);
+        updatePointOfInterest: async (_, { id, input, apiKey }) => {
+            await authenticateWithApiKey(_, _, _, { apiKey: apiKey });
             try {
-                await client.connect();
-                const database = client.db(dbName);
-                const collection = database.collection(collectionName);
+                const collection = await connect();
 
                 const result = await collection.findOneAndUpdate(
                     { _id: id },
@@ -105,15 +101,13 @@ const resolvers = {
                 console.error('Error updating point of interest:', error);
                 throw new Error('Internal server error');
             } finally {
-                await client.close();
+                closeConnection();
             }
         },
-        deletePointOfInterest: async (_, { id }) => {
-            const client = new MongoClient(uri);
+        deletePointOfInterest: async (_, { id, apiKey }) => {
+            await authenticateWithApiKey(_, _, _, { apiKey: apiKey });
             try {
-                await client.connect();
-                const database = client.db(dbName);
-                const collection = database.collection(collectionName);
+                const collection = await connect();
 
                 const result = await collection.deleteOne({ _id: id });
                 if (result.deletedCount === 1) {
@@ -129,7 +123,35 @@ const resolvers = {
                     throw new Error('Internal server error');
                 }
             } finally {
-                await client.close();
+                closeConnection();
+            }
+        },
+        generateApiKey: async (_, { clientName }) => {
+            // check if client already has an API key
+            // if not, generate a new API key
+
+            let apiKey = null;
+            try {
+                const collection = await connectToApiKeys();
+
+                const result = await collection.findOne({ clientName: clientName });
+                if (result) {
+                    throw new Error('Client already has an API key');
+                } else {
+                    apiKey = generateApiKey(clientName);
+                    await collection.insertOne({ clientName: clientName, apiKey: apiKey });
+                }
+
+                return apiKey;
+            } catch (error) {
+                if (error.message === 'Client already has an API key') {
+                    throw error;
+                } else {
+                    console.error('Error generating API key:', error);
+                    throw new Error('Internal server error');
+                }
+            } finally {
+                closeConnection();
             }
         },
     },
