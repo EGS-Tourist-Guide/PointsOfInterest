@@ -31,7 +31,7 @@ Below is shown some of the validation done to the inputs of the query. Some vali
   - location:
     - latitude -> -90 to 90 (Decimal Degrees)
     - longitude -> -180 to 180 (Decimal Degrees)
-  - radius -> 100 to 5000 Meters
+  - radius -> 100 to 50000 Meters
   - category -> Must be one of the five specified above
 
 If there are no input arguments, default POI's will be displayed.
