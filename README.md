@@ -31,7 +31,7 @@ Below is shown some of the validation done to the inputs of the query. Some vali
   - location:
     - latitude -> -90 to 90 (Decimal Degrees)
     - longitude -> -180 to 180 (Decimal Degrees)
-  - radius -> 100 to 50000 Meters
+  - radius -> 100 to 5000 Meters
   - category -> Must be one of the five specified above
 
 If there are no input arguments, default POI's will be displayed.
@@ -46,7 +46,6 @@ The output will be a list of POI's with the following information (id, name, loc
   - description
   - category
   - thumbnail
-  - *associated events*
 
 The schema structure (without the mutations) looks like this:
 
@@ -61,7 +60,6 @@ type PointOfInterest {
     description: String
     category: String
     thumbnail: String
-    event_ids: [ID]
   }
 
   input PoiSearchInput {
@@ -93,7 +91,7 @@ type PointOfInterest {
 ```graphql
 query findPOIs {
   searchPointsOfInterest(
-    apiKey: "Tiago:9f24cd24ab80e32b6582da3ae2187e9c"
+    apiKey: "Tigas:6969889805d8b24004a7f7741fd69a1e"
     searchInput: {
       locationName: "Aveiro"
       category: "Food"
@@ -110,7 +108,6 @@ query findPOIs {
     description
     category
     thumbnail
-    event_ids
   }
 }
 ```
@@ -137,7 +134,6 @@ For a better understanding of the query, the following image shows the structure
         "description": "O sabor único do genuíno rodízio brasileiro conquista Aveiro, sendo o mais típico restaurante brasileiro onde cada refeição é uma festa!",
         "category": "Food",
         "thumbnail": "https://example.com/botanical-garden-thumbnail.jpg",
-        "event_ids": null
       }
     ]
   }
@@ -149,7 +145,7 @@ For a better understanding of the query, the following image shows the structure
 ```graphql
 query findPOIs {
   searchPointsOfInterest(
-    apiKey: "Tiago:9f24cd24ab80e32b6582da3ae2187e9c"
+    apiKey: "Tigas:6969889805d8b24004a7f7741fd69a1e"
     searchInput: {
       location: {
         type: "Point"
@@ -169,7 +165,6 @@ query findPOIs {
     description
     category
     thumbnail
-    event_ids
   }
 }
 ```
@@ -195,11 +190,7 @@ Since, in this example, the user is located somewhere in Algarve, the result are
         "postcode": "8400-407",
         "description": "Praia da Marinha is one of the most emblematic and beautiful beaches in the Algarve region. It features stunning cliffs, crystal-clear waters, and golden sand.",
         "category": "Nature",
-        "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg",
-        "event_ids": [
-          "event1",
-          "event2"
-        ]
+        "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg"
       },
       {
         "_id": "2",
@@ -215,8 +206,7 @@ Since, in this example, the user is located somewhere in Algarve, the result are
         "postcode": null,
         "description": "Praia da Falésia is a breathtaking beach known for its towering cliffs and golden sands. It offers stunning views and is perfect for sunbathing and swimming.",
         "category": "Nature",
-        "thumbnail": "https://example.com/praia-da-falesia-thumbnail.jpg",
-        "event_ids": null
+        "thumbnail": "https://example.com/praia-da-falesia-thumbnail.jpg"
       }
     ]
   }
@@ -237,7 +227,6 @@ input CreatePointOfInterestInput {
     description: String
     category: String
     thumbnail: String
-    event_ids: [ID]
   }
 
   input UpdatePointOfInterestInput {
@@ -249,7 +238,6 @@ input CreatePointOfInterestInput {
     description: String
     category: String
     thumbnail: String
-    event_ids: [ID]
   }
 
   type Mutation {
@@ -265,14 +253,13 @@ Upon execution, both the Create and Update mutations return a JSON object contai
 ```graphql
 mutation exCreation {
   createPointOfInterest(
-    apiKey: "Tiago:9f24cd24ab80e32b6582da3ae2187e9c"
+    apiKey: "Tigas:6969889805d8b24004a7f7741fd69a1e"
     input: {
     name: "New Point of Interest"
     location: { type: "Point", coordinates: [-8.606590, 40.132760] }
     locationName: "Some Location Name"
     description: "Some brief description",
-    thumbnail: "https://example.com/praia-da-marinha-thumbnail.jpg",
-    event_ids: [ "event7", "event8" ]
+    thumbnail: "https://example.com/praia-da-marinha-thumbnail.jpg"
   }) {
     _id
     name
@@ -285,7 +272,6 @@ mutation exCreation {
     description
     category
     thumbnail
-    event_ids
     }
   }
 ```
@@ -309,11 +295,7 @@ The result of the creation is the JSON shown below:
       "postcode": null,
       "description": "Some brief description",
       "category": null,
-      "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg",
-      "event_ids": [
-        "event7",
-        "event8"
-      ]
+      "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg"
     }
   }
 }
@@ -340,7 +322,6 @@ mutation exUpdate {
     description
     category
     thumbnail
-    event_ids
   }
 }
 ```
@@ -358,20 +339,22 @@ mutation exDelete {
 ### API Keys
 As demonstrated in the examples above, authentication using an API Key is essential for client authorization when utilizing the search POIs query or the different mutations available. 
 
-Acknowledging this necessity, a mutation titled 'generateApiKey' was created, which operated without the need of key authentication. This mutation expects the name of the client as an argument and returns a new API Key specifically for that client. 
+Acknowledging this necessity, a mutation titled 'generateApiKey' was created, which operated without the need of key authentication. This mutation expects the name of the client and a password as arguments and returns a new API Key specifically for that client. 
 Furthermore, considering scenarios where clients might have previously generated a key but failed to store it correctly, the recoverApiKey query has been implemented to facilitate the retrieval of their key.
 
 #### Examples of usage (Generate and Recover)
 ```graphQL
 mutation createApiKey {
   generateApiKey(
-    clientName: "Tiago"
+    clientName: "Tigas"
+    password: "1234"
   )
 }
 
 query recoverApiKey {
   recoverApiKey(
-    clientName: "Tiago"
+    clientName: "Tigas"
+    password: "1234"
   )
 }
 ```
