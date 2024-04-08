@@ -4,6 +4,12 @@ import { validateSearchInput } from './validators/inputValidation.js';
 import { authenticateWithApiKey, generateApiKey } from './authUtils.js';
 import dotenv from 'dotenv';
 dotenv.config();
+//const bcrypt = require('bcrypt');
+
+// const hashPassword = async (password) => {
+//     const saltRounds = 10;
+//     return await bcrypt.hash(password, saltRounds);
+// }
 
 // Function to connect to MongoDB and execute the query
 const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
@@ -68,7 +74,7 @@ const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
 const resolvers = {
     Query: {
         searchPointsOfInterest,
-        recoverApiKey: async (_, { clientName }) => {
+        recoverApiKey: async (_, { clientName, password }) => {
             // check if client has an API key
             // if so, recover the API key
 
@@ -77,15 +83,20 @@ const resolvers = {
                 const collection = await connectToApiKeys();
 
                 const result = await collection.findOne({ clientName: clientName });
-                if (result) {
-                    apiKey = result.apiKey;
-                } else {
-                    throw new Error('Client does not have an API key');
+                if(!result) {
+                    throw new Error('Client not found');
                 }
 
-                return apiKey;
+                // Verify if the provided password matches the stored hashed password
+                // const storedHashedPassword = result.password;
+                // const passwordMatch = await.compare(password, storedHashedPassword);
+                // if (!passwordMatch) {
+                //     throw new Error('Incorrect password');
+                // }
+
+                return result.apiKey;
             } catch (error) {
-                if (error.message === 'Client does not have an API key') {
+                if (error.message === 'Client not found' || error.message === 'Incorrect password') {
                     throw error;
                 } else {
                     console.error('Error recovering API key:', error);
@@ -158,7 +169,7 @@ const resolvers = {
                 closeConnection();
             }
         },
-        generateApiKey: async (_, { clientName }) => {
+        generateApiKey: async (_, { clientName, password }) => {
             // check if client already has an API key
             // if not, generate a new API key
 
@@ -169,10 +180,12 @@ const resolvers = {
                 const result = await collection.findOne({ clientName: clientName });
                 if (result) {
                     throw new Error('Client already has an API key');
-                } else {
-                    apiKey = generateApiKey(clientName);
-                    await collection.insertOne({ clientName: clientName, apiKey: apiKey });
-                }
+                } 
+
+                //const hashedPassword = await hashPassword(password);
+                
+                apiKey = generateApiKey(clientName);
+                await collection.insertOne({ clientName: clientName, apiKey: apiKey, password: password });//password: hashedPassword });
 
                 return apiKey;
             } catch (error) {
