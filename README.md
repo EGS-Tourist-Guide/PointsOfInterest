@@ -91,7 +91,7 @@ type PointOfInterest {
 ```graphql
 query findPOIs {
   searchPointsOfInterest(
-    apiKey: "Tigas:6969889805d8b24004a7f7741fd69a1e"
+    apiKey: "Tigas:4712b0a1d771938c04e5cba078b0a889"
     searchInput: {
       locationName: "Aveiro"
       category: "Food"
@@ -145,7 +145,7 @@ For a better understanding of the query, the following image shows the structure
 ```graphql
 query findPOIs {
   searchPointsOfInterest(
-    apiKey: "Tigas:6969889805d8b24004a7f7741fd69a1e"
+    apiKey: "Tigas:4712b0a1d771938c04e5cba078b0a889"
     searchInput: {
       location: {
         type: "Point"
@@ -253,7 +253,7 @@ Upon execution, both the Create and Update mutations return a JSON object contai
 ```graphql
 mutation exCreation {
   createPointOfInterest(
-    apiKey: "Tigas:6969889805d8b24004a7f7741fd69a1e"
+    apiKey: "Tigas:4712b0a1d771938c04e5cba078b0a889"
     input: {
     name: "New Point of Interest"
     location: { type: "Point", coordinates: [-8.606590, 40.132760] }
@@ -261,41 +261,47 @@ mutation exCreation {
     description: "Some brief description",
     thumbnail: "https://example.com/praia-da-marinha-thumbnail.jpg"
   }) {
-    _id
-    name
-    location {
-      coordinates
+    poi {
+      _id
+      name
+      location {
+        coordinates
+      }
+      locationName
+      street
+      postcode
+      description
+      category
+      thumbnail
     }
-    locationName
-    street
-    postcode
-    description
-    category
-    thumbnail
+    message
     }
   }
 ```
 In this case, since no street, postcode or category values were provided, these fields will not be populated in the database for the respective document. Consequently, whenever this particular POI is queried, these pieces of information will be null. 
 
-The result of the creation is the JSON shown below:
+The result of the creation is the JSON shown below (a message indicates whether the new POI was created, or if already exists one with that name):
 ```json
 {
   "data": {
     "createPointOfInterest": {
-      "_id": "6600a5d099203c3b78465865",
-      "name": "New Point of Interest",
-      "location": {
-        "coordinates": [
-          -8.60659,
-          40.13276
-        ]
+      "poi": {
+        "_id": "6615caecb656ee4cda190471",
+        "name": "New POI",
+        "location": {
+          "coordinates": [
+            -8.60659,
+            40.13276
+          ]
+        },
+        "locationName": "Some Location Name",
+        "street": null,
+        "postcode": null,
+        "description": "Some brief description",
+        "category": null,
+        "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg"
       },
-      "locationName": "Some Location Name",
-      "street": null,
-      "postcode": null,
-      "description": "Some brief description",
-      "category": null,
-      "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg"
+      "message": "Point of interest created successfully"
     }
   }
 }
@@ -305,8 +311,8 @@ The result of the creation is the JSON shown below:
 ```graphQL
 mutation exUpdate {
   updatePointOfInterest(
-    apiKey: "Tiago:9f24cd24ab80e32b6582da3ae2187e9c"
-    id: "9"  # Specify the ID of the point of interest to update
+    apiKey: "Tigas:4712b0a1d771938c04e5cba078b0a889"
+    id: "6615caecb656ee4cda190471"  # Specify the ID of the point of interest to update
     input: {
       name: "Updated name"
     }
@@ -329,8 +335,8 @@ mutation exUpdate {
 ```graphQL
 mutation exDelete {
   deletePointOfInterest(
-    apiKey: "Tiago:9f24cd24ab80e32b6582da3ae2187e9c"
-    id: "9"  # Specify the ID of the point of interest to delete
+    apiKey: "Tigas:4712b0a1d771938c04e5cba078b0a889"
+    id: "6615caecb656ee4cda190471"
     )  
 }
 ```

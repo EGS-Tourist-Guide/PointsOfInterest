@@ -3,13 +3,13 @@ import { connect, connectToApiKeys, closeConnection } from './database/db.js';
 import { validateSearchInput } from './validators/inputValidation.js';
 import { authenticateWithApiKey, generateApiKey } from './authUtils.js';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 dotenv.config();
-//const bcrypt = require('bcrypt');
 
-// const hashPassword = async (password) => {
-//     const saltRounds = 10;
-//     return await bcrypt.hash(password, saltRounds);
-// }
+const hashPassword = async (password) => {
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
+}
 
 // Function to connect to MongoDB and execute the query
 const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
@@ -87,12 +87,12 @@ const resolvers = {
                     throw new Error('Client not found');
                 }
 
-                // Verify if the provided password matches the stored hashed password
-                // const storedHashedPassword = result.password;
-                // const passwordMatch = await.compare(password, storedHashedPassword);
-                // if (!passwordMatch) {
-                //     throw new Error('Incorrect password');
-                // }
+                //Verify if the provided password matches the stored hashed password
+                const storedHashedPassword = result.password;
+                const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
+                if (!passwordMatch) {
+                    throw new Error('Incorrect password');
+                }
 
                 return result.apiKey;
             } catch (error) {
@@ -114,6 +114,20 @@ const resolvers = {
             try {
                 const collection = await connect();
 
+                // Convert the name to a case-insensitive regex pattern
+                const nameRegex = new RegExp('^' + input.name + '$', 'i');
+
+                // Check if a point of interest with a similar name already exists (case-insensitive)
+                const existingPointOfInterest = await collection.findOne({ name: { $regex: nameRegex } });
+
+                // If an existing point of interest with the same name is found, return it
+                if (existingPointOfInterest) {
+                    return {
+                        poi: existingPointOfInterest,
+                        message: 'Point of interest already exists, returning existing point of interest'
+                    };
+                }
+                
                 const result = await collection.insertOne(input);
 
                 const insertedId = result.insertedId;
@@ -121,7 +135,10 @@ const resolvers = {
                 // Fetch the created point of interest using the inserted ID
                 const createdPointOfInterest = await collection.findOne({ _id: insertedId });
 
-                return createdPointOfInterest;
+                return {
+                    poi: createdPointOfInterest,
+                    message: 'Point of interest created successfully'
+                };
             } catch (error) {
                 throw new Error('Internal server error');
             } finally {
@@ -130,11 +147,12 @@ const resolvers = {
         },
         updatePointOfInterest: async (_, { id, input, apiKey }) => {
             await authenticateWithApiKey(_, _, _, { apiKey: apiKey });
+
             try {
                 const collection = await connect();
 
                 const result = await collection.findOneAndUpdate(
-                    { _id: id },
+                    { _id: ObjectId.createFromHexString(id) },
                     { $set: input },
                     { returnOriginal: false }
                 );
@@ -152,7 +170,7 @@ const resolvers = {
             try {
                 const collection = await connect();
 
-                const result = await collection.deleteOne({ _id: id });
+                const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(id) });
                 if (result.deletedCount === 1) {
                     return 'Point of interest deleted successfully';
                 } else {
@@ -182,10 +200,10 @@ const resolvers = {
                     throw new Error('Client already has an API key');
                 } 
 
-                //const hashedPassword = await hashPassword(password);
+                const hashedPassword = await hashPassword(password);
                 
                 apiKey = generateApiKey(clientName);
-                await collection.insertOne({ clientName: clientName, apiKey: apiKey, password: password });//password: hashedPassword });
+                await collection.insertOne({ clientName: clientName, apiKey: apiKey, password: hashedPassword });
 
                 return apiKey;
             } catch (error) {
