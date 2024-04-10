@@ -1,6 +1,6 @@
 export const typeDefs = `#graphql
   type PointOfInterest { 
-    _id: ID!
+    id: ID!
     name: String!
     location: Point!
     locationName: String!
