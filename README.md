@@ -39,7 +39,7 @@ One can also search by specifying the POI ID.
 If there are no input arguments, default POI's will be displayed.
 
 The output will be a list of POI's with the following information (id, name, location, description, category are mandatory):
-  - id
+  - _id
   - name
   - location (coordinates)
   - location name
@@ -65,7 +65,7 @@ type PointOfInterest {
   }
 
   input PoiSearchInput {
-    id: ID
+    _id: ID
     location: PointInput
     radius: Float
     locationName: String
@@ -250,8 +250,8 @@ input CreatePointOfInterestInput {
 
   type Mutation {
     createPointOfInterest(input: CreatePointOfInterestInput!, apiKey: String!): PointOfInterestWithMessage!
-    updatePointOfInterest(id: ID!, input: UpdatePointOfInterestInput!, apiKey: String!): PointOfInterest!
-    deletePointOfInterest(id: ID!, apiKey: String!): String!
+    updatePointOfInterest(_id: ID!, input: UpdatePointOfInterestInput!, apiKey: String!): PointOfInterest!
+    deletePointOfInterest(_id: ID!, apiKey: String!): String!
   }
 ```
 The creation of a new POI requires three mandatory input fields: name, location (coordinates), and location name.
@@ -320,7 +320,7 @@ The result of the creation is the JSON shown below (a message indicates whether 
 mutation exUpdate {
   updatePointOfInterest(
     apiKey: "Tigas:4712b0a1d771938c04e5cba078b0a889"
-    id: "6615caecb656ee4cda190471"  # Specify the ID of the point of interest to update
+    _id: "6615caecb656ee4cda190471"  # Specify the ID of the point of interest to update
     input: {
       name: "Updated name"
     }
@@ -344,7 +344,7 @@ mutation exUpdate {
 mutation exDelete {
   deletePointOfInterest(
     apiKey: "Tigas:4712b0a1d771938c04e5cba078b0a889"
-    id: "6615caecb656ee4cda190471"
+    _id: "6615caecb656ee4cda190471"
     )  
 }
 ```

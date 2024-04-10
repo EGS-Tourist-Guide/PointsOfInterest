@@ -1,6 +1,6 @@
 export const typeDefs = `#graphql
   type PointOfInterest { 
-    id: ID!
+    _id: ID!
     name: String!
     location: Point!
     locationName: String!
@@ -17,7 +17,7 @@ export const typeDefs = `#graphql
   }
 
   input PoiSearchInput {
-    id: ID
+    _id: ID
     location: PointInput
     radius: Float
     locationName: String
@@ -64,8 +64,8 @@ export const typeDefs = `#graphql
 
   type Mutation {
     createPointOfInterest(input: CreatePointOfInterestInput!, apiKey: String!): PointOfInterestWithMessage!
-    updatePointOfInterest(id: ID!, input: UpdatePointOfInterestInput!, apiKey: String!): PointOfInterest!
-    deletePointOfInterest(id: ID!, apiKey: String!): String!
+    updatePointOfInterest(_id: ID!, input: UpdatePointOfInterestInput!, apiKey: String!): PointOfInterest!
+    deletePointOfInterest(_id: ID!, apiKey: String!): String!
 
     generateApiKey(clientName: String!, password: String!): String!
   }

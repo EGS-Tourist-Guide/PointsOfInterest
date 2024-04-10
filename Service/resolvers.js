@@ -24,8 +24,8 @@ const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
         // Construct the filter based on the search input
         const filter = {};
 
-        if (searchInput.id) {
-            filter['_id'] = ObjectId.createFromHexString(searchInput.id);
+        if (searchInput._id) {
+            filter['_id'] = ObjectId.createFromHexString(searchInput._id);
         }
 
         if (searchInput.locationName) {
@@ -128,12 +128,30 @@ const resolvers = {
                 if (existingPointOfInterest) {
                     return {
                         poi: existingPointOfInterest,
-                        message: 'Point of interest already exists, returning existing point of interest'
+                        message: 'A point of interest with that name already exists, returning existing point of interest'
                     };
                 }
 
-                // TODO
-                // Also check if a point of interest with a location point really close to the new one already exists
+                // Check if a point of interest is already within 100 meters of the new one
+                const nearbyPointOfInterest = await collection.findOne({
+                    location: {
+                        $nearSphere: {
+                            $geometry: {
+                                type: 'Point',
+                                coordinates: input.location.coordinates
+                            },
+                            $maxDistance: 100 
+                        }
+                    }
+                });
+
+                // If a nearby point of interest is found, return it
+                if (nearbyPointOfInterest) {
+                    return {
+                        poi: nearbyPointOfInterest,
+                        message: 'A point of interest already exists within 100 meters, returning existing point of interest'
+                    };
+                }
 
                 const result = await collection.insertOne(input);
 
@@ -152,14 +170,14 @@ const resolvers = {
                 closeConnection();
             }
         },
-        updatePointOfInterest: async (_, { id, input, apiKey }) => {
+        updatePointOfInterest: async (_, { _id, input, apiKey }) => {
             await authenticateWithApiKey(_, _, _, { apiKey: apiKey });
 
             try {
                 const collection = await connect();
 
                 const result = await collection.findOneAndUpdate(
-                    { _id: ObjectId.createFromHexString(id) },
+                    { _id: ObjectId.createFromHexString(_id) },
                     { $set: input },
                     { returnOriginal: false }
                 );
@@ -172,12 +190,12 @@ const resolvers = {
                 closeConnection();
             }
         },
-        deletePointOfInterest: async (_, { id, apiKey }) => {
+        deletePointOfInterest: async (_, { _id, apiKey }) => {
             await authenticateWithApiKey(_, _, _, { apiKey: apiKey });
             try {
                 const collection = await connect();
 
-                const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(id) });
+                const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(_id) });
                 if (result.deletedCount === 1) {
                     return 'Point of interest deleted successfully';
                 } else {
