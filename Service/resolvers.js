@@ -24,6 +24,10 @@ const searchPointsOfInterest = async (_, { searchInput, apiKey }) => {
         // Construct the filter based on the search input
         const filter = {};
 
+        if (searchInput.id) {
+            filter['_id'] = ObjectId.createFromHexString(searchInput.id);
+        }
+
         if (searchInput.locationName) {
             // Case-insensitive regex to match the location name
             filter['locationName'] = {
@@ -127,7 +131,10 @@ const resolvers = {
                         message: 'Point of interest already exists, returning existing point of interest'
                     };
                 }
-                
+
+                // TODO
+                // Also check if a point of interest with a location point really close to the new one already exists
+
                 const result = await collection.insertOne(input);
 
                 const insertedId = result.insertedId;

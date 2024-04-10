@@ -34,6 +34,8 @@ Below is shown some of the validation done to the inputs of the query. Some vali
   - radius -> 100 to 5000 Meters
   - category -> Must be one of the five specified above
 
+One can also search by specifying the POI ID.
+
 If there are no input arguments, default POI's will be displayed.
 
 The output will be a list of POI's with the following information (id, name, location, description, category are mandatory):
@@ -63,6 +65,7 @@ type PointOfInterest {
   }
 
   input PoiSearchInput {
+    id: ID
     location: PointInput
     radius: Float
     locationName: String
@@ -240,8 +243,13 @@ input CreatePointOfInterestInput {
     thumbnail: String
   }
 
+  type PointOfInterestWithMessage {
+    poi: PointOfInterest!
+    message: String!
+  }
+
   type Mutation {
-    createPointOfInterest(input: CreatePointOfInterestInput!, apiKey: String!): PointOfInterest!
+    createPointOfInterest(input: CreatePointOfInterestInput!, apiKey: String!): PointOfInterestWithMessage!
     updatePointOfInterest(id: ID!, input: UpdatePointOfInterestInput!, apiKey: String!): PointOfInterest!
     deletePointOfInterest(id: ID!, apiKey: String!): String!
   }

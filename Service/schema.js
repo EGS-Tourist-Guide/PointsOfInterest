@@ -17,6 +17,7 @@ export const typeDefs = `#graphql
   }
 
   input PoiSearchInput {
+    id: ID
     location: PointInput
     radius: Float
     locationName: String
