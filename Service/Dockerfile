@@ -1,5 +1,5 @@
 # Node official image as base image
-FROM node:14
+FROM node:18.12.0
 
 # Create app directory
 WORKDIR /app

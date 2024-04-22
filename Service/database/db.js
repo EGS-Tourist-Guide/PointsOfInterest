@@ -6,7 +6,7 @@ dotenv.config();
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'; 
 const dbName = process.env.DB_NAME || 'poi_database'; 
 const mainCollection = process.env.COLLECTION_NAME || 'POIs';
-const apiKeysCollection = process.env.COLLECTION_APIKEYS || 'APIKeys';
+const apiKeysCollection = process.env.COLLECTION_APIKEYS || 'apiKeys';
 
 let client = null;
 
