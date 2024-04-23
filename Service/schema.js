@@ -9,6 +9,7 @@ export const typeDefs = `#graphql
     description: String
     category: String
     thumbnail: String
+    event_ids: [ID]
    }
 
   type PointOfInterestWithMessage {
@@ -49,6 +50,7 @@ export const typeDefs = `#graphql
     description: String
     category: String
     thumbnail: String
+    event_ids: [ID]
   }
 
   input UpdatePointOfInterestInput {
@@ -60,6 +62,7 @@ export const typeDefs = `#graphql
     description: String
     category: String
     thumbnail: String
+    event_ids: [ID]
   }
 
   type Mutation {
