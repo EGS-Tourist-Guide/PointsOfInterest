@@ -11,6 +11,19 @@ const db = db.getSiblingDB('poi_database');
 db.createCollection("POIs");
 db.createCollection("apiKeys");
 
+// Create default API key
+
+
+// clientName "Tigas"
+// apiKey "Tigas:4712b0a1d771938c04e5cba078b0a889"
+// password "$2b$10$vUemVm248PUDU3oH/GSQruO4fMZR1mJitcum4XtJbvgykc6m2pqTC"
+
+db.apiKeys.insertOne({
+  clientName: "Tigas",
+  apiKey: "Tigas:4712b0a1d771938c04e5cba078b0a889",
+  password: "$2b$10$vUemVm248PUDU3oH/GSQruO4fMZR1mJitcum4XtJbvgykc6m2pqTC"
+});
+
 // Create a geospatial index on the 'location' field in the 'POIs' collection
 db.POIs.createIndex({ location: "2dsphere" });
 

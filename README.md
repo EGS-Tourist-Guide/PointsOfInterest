@@ -226,7 +226,7 @@ Since, in this example, the user is located somewhere in Algarve, the result are
 ```
 curl -X POST http://localhost:4000/graphql \
 -H "Content-Type: application/json" \
--d '{"query":"query findPOIs { searchPointsOfInterest( apiKey: \"Tigas:119b78b179ef4e0f439a9b885f2f8b1f\", searchInput: { locationName: \"Portugal\" } ) { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } }"}'
+-d '{"query":"query findPOIs { searchPointsOfInterest( apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\", searchInput: { locationName: \"Portugal\" } ) { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } }"}'
 ```
 
 ### Mutations - Create, Update and Delete POIs
@@ -337,7 +337,7 @@ The result of the creation is the JSON shown below (a message indicates whether 
 curl -X POST http://localhost:4000/graphql \
 -H "Content-Type: application/json" \
 -d '{
-  "query": "mutation exCreation { createPointOfInterest( apiKey: \"Tigas:1357e66e1136dc572da1d2eac14e8c0c\", input: { name: \"NewPOI\", location: { type: \"Point\", coordinates: [-8.600, 40.132] }, locationName: \"Some Location Name\", description: \"Some brief description\", thumbnail: \"https://example.com/praia-da-marinha-thumbnail.jpg\", event_ids: [ \"newEvent1\", \"newEvent2\" ] }) { poi { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } message } }"
+  "query": "mutation exCreation { createPointOfInterest( apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\", input: { name: \"NewPOI\", location: { type: \"Point\", coordinates: [-8.600, 40.132] }, locationName: \"Some Location Name\", description: \"Some brief description\", thumbnail: \"https://example.com/praia-da-marinha-thumbnail.jpg\", event_ids: [ \"newEvent1\", \"newEvent2\" ] }) { poi { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } message } }"
 }'
 ```
 
