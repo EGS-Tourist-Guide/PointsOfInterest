@@ -24,6 +24,7 @@ db.POIs.createIndex({ location: "2dsphere" });
 // Insert documents into POIs collection
 db.POIs.insertMany([
   {
+    _id: ObjectId("5f8f4b3b9b3e6b1f3c1e4b1a"),
     name: "Praia da Marinha",
     location: {
       type: "Point",
@@ -37,6 +38,7 @@ db.POIs.insertMany([
     event_ids: ["event1", "event2"]
   },
   {
+    _id: ObjectId("5f8f4b3b9b3e6b1f3c1e4b1b"),
     name: "Jardim Botânico de Coimbra",
     location: {
       type: "Point",
@@ -51,6 +53,7 @@ db.POIs.insertMany([
     event_ids: ["event3"]
   },
   {
+    _id: ObjectId("5f8f4b3b9b3e6b1f3c1e4b1c"),
     name: "Rio Mondego",
     location: {
       type: "Point",
@@ -62,6 +65,7 @@ db.POIs.insertMany([
     event_ids: ["event4", "event5"]
   },
   {
+    _id: ObjectId("5f8f4b3b9b3e6b1f3c1e4b1d"),
     name: "Restaurante Espeto do Sul",
     location: {
       type: "Point",
