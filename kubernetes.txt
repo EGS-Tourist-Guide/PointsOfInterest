@@ -1,0 +1,13 @@
+docker buildx build --platform linux/amd64 --network=host -t registry.deti/egs-touristguide/poi:v1 .
+docker push registry.deti/egs-touristguide/poi:v1
+kubectl create configmap mongo-db-init --from-file=init-mongo.js=./database/init-mongo.js -n egs-touristguide
+kubectl apply -f deployment.yaml -n egs-touristguide
+
+
+kubectl delete configmap mysql-init-db -n egs-touristguide
+kubectl delete pod <nome-do-pod> -n egs-touristguide 
+
+
+kubectl get pods -n egs-touristguide
+kubectl logs <name_pod> -n egs-touristguide
+kubectl logs traefik-f4564c4f4-sfkhg -n kube-system
