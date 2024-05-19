@@ -15,7 +15,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 1Gi
 
 ---
 apiVersion: apps/v1
@@ -111,29 +111,3 @@ spec:
       port: 80
       targetPort: 4000
   type: LoadBalancer
-
-
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: touristguide-k3s
-  namespace: egs-touristguide
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
-    traefik.ingress.kubernetes.io/redirect-entry-point: https
-    traefik.ingress.kubernetes.io/redirect-permanent: "true"
-spec:
-  rules:
-    - host: touristguide
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: poi-app-service
-                port:
-                  number: 4000
-
