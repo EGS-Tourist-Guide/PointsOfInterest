@@ -48,7 +48,6 @@ The output will be a list of POI's with the following information (id, name, loc
   - description
   - category
   - thumbnail
-  - event ids
 
 The schema structure (without the mutations) looks like this:
 
@@ -63,7 +62,6 @@ type PointOfInterest {
     description: String
     category: String
     thumbnail: String
-    event_ids: [ID]
   }
 
   input PoiSearchInput {
@@ -113,7 +111,6 @@ query findPOIs {
     description
     category
     thumbnail
-    event_ids
   }
 }
 ```
@@ -139,8 +136,7 @@ For a better understanding of the query, the following image shows the structure
         "postcode": "3810-187",
         "description": "O sabor único do genuíno rodízio brasileiro conquista Aveiro, sendo o mais típico restaurante brasileiro onde cada refeição é uma festa!",
         "category": "Food",
-        "thumbnail": "https://example.com/botanical-garden-thumbnail.jpg",
-        "event_ids": [ "event6" ]
+        "thumbnail": "https://example.com/botanical-garden-thumbnail.jpg"
       }
     ]
   }
@@ -172,7 +168,6 @@ query findPOIs {
     description
     category
     thumbnail
-    event_ids
   }
 }
 ```
@@ -198,8 +193,7 @@ Since, in this example, the user is located somewhere in Algarve, the result are
         "postcode": "8400-407",
         "description": "Praia da Marinha is one of the most emblematic and beautiful beaches in the Algarve region. It features stunning cliffs, crystal-clear waters, and golden sand.",
         "category": "Nature",
-        "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg",
-        "event_ids": ["event1", "event2"]
+        "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg"
       },
       {
         "_id": "2",
@@ -215,8 +209,7 @@ Since, in this example, the user is located somewhere in Algarve, the result are
         "postcode": null,
         "description": "Praia da Falésia is a breathtaking beach known for its towering cliffs and golden sands. It offers stunning views and is perfect for sunbathing and swimming.",
         "category": "Nature",
-        "thumbnail": "https://example.com/praia-da-falesia-thumbnail.jpg",
-        "event_ids": ["event3"]
+        "thumbnail": "https://example.com/praia-da-falesia-thumbnail.jpg"
       }
     ]
   }
@@ -226,7 +219,7 @@ Since, in this example, the user is located somewhere in Algarve, the result are
 ```
 curl -X POST http://localhost:4000/graphql \
 -H "Content-Type: application/json" \
--d '{"query":"query findPOIs { searchPointsOfInterest( apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\", searchInput: { locationName: \"Portugal\" } ) { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } }"}'
+-d '{"query":"query findPOIs { searchPointsOfInterest( apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\", searchInput: { locationName: \"Portugal\" } ) { _id name location { coordinates } locationName street postcode description category thumbnail } }"}'
 ```
 
 ### Mutations - Create, Update and Delete POIs
@@ -243,7 +236,6 @@ input CreatePointOfInterestInput {
     description: String
     category: String
     thumbnail: String
-    event_ids: [ID]
   }
 
   input UpdatePointOfInterestInput {
@@ -255,7 +247,6 @@ input CreatePointOfInterestInput {
     description: String
     category: String
     thumbnail: String
-    event_ids: [ID]
   }
 
   type PointOfInterestWithMessage {
@@ -282,8 +273,7 @@ mutation exCreation {
     location: { type: "Point", coordinates: [-8.606590, 40.132760] }
     locationName: "Some Location Name"
     description: "Some brief description",
-    thumbnail: "https://example.com/praia-da-marinha-thumbnail.jpg",
-    event_ids: [ "newEvent1", "nemEvent2" ]
+    thumbnail: "https://example.com/praia-da-marinha-thumbnail.jpg"
   }) {
     poi {
       _id
@@ -297,7 +287,6 @@ mutation exCreation {
       description
       category
       thumbnail
-      event_ids
     }
     message
     }
@@ -324,8 +313,7 @@ The result of the creation is the JSON shown below (a message indicates whether 
         "postcode": null,
         "description": "Some brief description",
         "category": null,
-        "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg",
-        "event_ids": [ "newEvent1","newEvent2"]
+        "thumbnail": "https://example.com/praia-da-marinha-thumbnail.jpg"
       },
       "message": "Point of interest created successfully"
     }
@@ -337,7 +325,7 @@ The result of the creation is the JSON shown below (a message indicates whether 
 curl -X POST http://localhost:4000/graphql \
 -H "Content-Type: application/json" \
 -d '{
-  "query": "mutation exCreation { createPointOfInterest( apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\", input: { name: \"NewPOI\", location: { type: \"Point\", coordinates: [-8.600, 40.132] }, locationName: \"Some Location Name\", description: \"Some brief description\", thumbnail: \"https://example.com/praia-da-marinha-thumbnail.jpg\", event_ids: [ \"newEvent1\", \"newEvent2\" ] }) { poi { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } message } }"
+  "query": "mutation exCreation { createPointOfInterest( apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\", input: { name: \"NewPOI\", location: { type: \"Point\", coordinates: [-8.600, 40.132] }, locationName: \"Some Location Name\", description: \"Some brief description\", thumbnail: \"https://example.com/praia-da-marinha-thumbnail.jpg\" }) { poi { _id name location { coordinates } locationName street postcode description category thumbnail } message } }"
 }'
 ```
 
@@ -371,7 +359,7 @@ mutation exUpdate {
 curl -X POST http://localhost:4000/graphql \
 -H "Content-Type: application/json" \
 -d '{
-  "query": "mutation exUpdate { updatePointOfInterest( apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\", _id: \"66146fc092cc6d0cb1d3a4d9\", input: { name: \"Updated name\" }) { _id name location { coordinates } locationName street postcode description category thumbnail event_ids } }"
+  "query": "mutation exUpdate { updatePointOfInterest( apiKey: \"Tigas:4712b0a1d771938c04e5cba078b0a889\", _id: \"66146fc092cc6d0cb1d3a4d9\", input: { name: \"Updated name\" }) { _id name location { coordinates } locationName street postcode description category thumbnail } }"
 }'
 ```
 
