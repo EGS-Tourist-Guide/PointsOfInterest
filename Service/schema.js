@@ -41,8 +41,6 @@ export const typeDefs = `#graphql
     coordinates: [Float]!
   }
 
-
-
   input CreatePointOfInterestInput {
     name: String!
     location: PointInput!
@@ -52,7 +50,6 @@ export const typeDefs = `#graphql
     description: String
     category: String
     thumbnail: String
-    event_ids: [ID]
   }
 
   input UpdatePointOfInterestInput {
@@ -64,7 +61,6 @@ export const typeDefs = `#graphql
     description: String
     category: String
     thumbnail: String
-    event_ids: [ID]
   }
 
   type Mutation {
